@@ -1,7 +1,39 @@
 apply plugin: "scala"
+apply plugin: "maven-publish"
+
+jar {
+    baseName = "rx-scala-wrapper"
+    version = "NEXT-SNAPSHOT"
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allScala
+}
 
 repositories {
     jcenter()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId "eu.exante"
+            artifactId "rx-scala-wrapper"
+            version "0.1.0"
+
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url("http://nexus.ghcg.com/repository/thirdparty")
+            credentials {
+                username "$nexusUsername"
+                password "$nexusPassword"
+            }
+        }
+    }
 }
 
 dependencies {
