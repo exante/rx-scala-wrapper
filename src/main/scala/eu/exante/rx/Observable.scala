@@ -1,8 +1,9 @@
 package eu.exante.rx
 
 import io.reactivex.disposables.Disposable
-import io.reactivex.{ObservableSource, ObservableTransformer}
+import io.reactivex.{ObservableSource, ObservableTransformer, functions}
 
+import scala.collection.JavaConverters._
 import scala.concurrent.duration.TimeUnit
 
 class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
@@ -85,6 +86,48 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
 
 object Observable {
 
+  def amb[T](sources: Iterable[_ <: ObservableSource[_ <: T]]): Observable[T] = {
+    io.reactivex.Observable.amb[T](sources.asJava)
+  }
+
+  def ambArray[T](sources: ObservableSource[_ <: T]*): Observable[T] = {
+    io.reactivex.Observable.ambArray[T](sources: _*)
+  }
+
+  def bufferSize: Int = {
+    io.reactivex.Observable.bufferSize()
+  }
+
+  def combineLatest[T, R](bufferSize: Int, sources: ObservableSource[_ <: T]*)(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatest[T, R](new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(t.asInstanceOf[Array[T]])
+    }, bufferSize, sources: _*)
+  }
+
+  def combineLatest[T, R](sources: Iterable[_ <: ObservableSource[_ <: T]])(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatest[T, R](sources.asJava, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(t.asInstanceOf[Array[T]])
+    })
+  }
+
+  def combineLatest[T, R](sources: Iterable[_ <: ObservableSource[_ <: T]], bufferSize: Int)(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatest[T, R](sources.asJava, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(sources.asInstanceOf[Array[T]])
+    }, bufferSize)
+  }
+
+  def combineLatest[T, R](sources: Array[ObservableSource[_ <: T]])(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatest[T, R](sources, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(sources.asInstanceOf[Array[T]])
+    })
+  }
+
+  def combineLatest[T, R](sources: Array[ObservableSource[_ <: T]], bufferSize: Int)(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatest[T, R](sources, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(sources.asInstanceOf[Array[T]])
+    }, bufferSize)
+  }
+
   def combineLatest[T1, T2](source1: Observable[T1], source2: Observable[T2]): Observable[(T1, T2)] = {
     io.reactivex.Observable.combineLatest[T1, T2, (T1, T2)](source1, source2, (_, _))
   }
@@ -104,12 +147,146 @@ object Observable {
       source1, source2, source3, source4, (_, _, _, _))
   }
 
-  def concat[T](source1: Observable[T], source2: Observable[T]): Observable[T] = {
+  def combineLatest[T1, T2, T3, T4, T5](source1: Observable[T1],
+                                        source2: Observable[T2],
+                                        source3: Observable[T3],
+                                        source4: Observable[T4],
+                                        source5: Observable[T5]): Observable[(T1, T2, T3, T4, T5)] = {
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, (T1, T2, T3, T4, T5)](
+      source1, source2, source3, source4, source5, (_, _, _, _, _))
+  }
+
+  def combineLatest[T1, T2, T3, T4, T5, T6](source1: Observable[T1],
+                                            source2: Observable[T2],
+                                            source3: Observable[T3],
+                                            source4: Observable[T4],
+                                            source5: Observable[T5],
+                                            source6: Observable[T6]): Observable[(T1, T2, T3, T4, T5, T6)] = {
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, (T1, T2, T3, T4, T5, T6)](
+      source1, source2, source3, source4, source5, source6, (_, _, _, _, _, _))
+  }
+
+  def combineLatest[T1, T2, T3, T4, T5, T6, T7](source1: Observable[T1],
+                                                source2: Observable[T2],
+                                                source3: Observable[T3],
+                                                source4: Observable[T4],
+                                                source5: Observable[T5],
+                                                source6: Observable[T6],
+                                                source7: Observable[T7]): Observable[(T1, T2, T3, T4, T5, T6, T7)] = {
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, (T1, T2, T3, T4, T5, T6, T7)](
+      source1, source2, source3, source4, source5, source6, source7, (_, _, _, _, _, _, _))
+  }
+
+  def combineLatest[T1, T2, T3, T4, T5, T6, T7, T8](source1: Observable[T1],
+                                                    source2: Observable[T2],
+                                                    source3: Observable[T3],
+                                                    source4: Observable[T4],
+                                                    source5: Observable[T5],
+                                                    source6: Observable[T6],
+                                                    source7: Observable[T7],
+                                                    source8: Observable[T8]): Observable[(T1, T2, T3, T4, T5, T6, T7, T8)] = {
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, (T1, T2, T3, T4, T5, T6, T7, T8)](
+      source1, source2, source3, source4, source5, source6, source7, source8, (_, _, _, _, _, _, _, _))
+  }
+
+  def combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, T9](source1: Observable[T1],
+                                                        source2: Observable[T2],
+                                                        source3: Observable[T3],
+                                                        source4: Observable[T4],
+                                                        source5: Observable[T5],
+                                                        source6: Observable[T6],
+                                                        source7: Observable[T7],
+                                                        source8: Observable[T8],
+                                                        source9: Observable[T9]): Observable[(T1, T2, T3, T4, T5, T6, T7, T8, T9)] = {
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, T9, (T1, T2, T3, T4, T5, T6, T7, T8, T9)](
+      source1, source2, source3, source4, source5, source6, source7, source8, source9, (_, _, _, _, _, _, _, _, _))
+  }
+
+  def combineLatestDelayError[T, R](sources: Array[ObservableSource[_ <: T]])(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatestDelayError[T, R](sources, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(t.asInstanceOf[Array[T]])
+    })
+  }
+
+  def combineLatestDelayError[T, R](bufferSize: Int, sources: ObservableSource[_ <: T]*)(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatestDelayError[T, R](new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(t.asInstanceOf[Array[T]])
+    }, bufferSize, sources: _*)
+  }
+
+  def combineLatestDelayError[T, R](sources: Array[ObservableSource[_ <: T]], bufferSize: Int)(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatestDelayError[T, R](sources, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(t.asInstanceOf[Array[T]])
+    }, bufferSize)
+  }
+
+  def combineLatestDelayError[T, R](sources: Iterable[ObservableSource[_ <: T]])(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatestDelayError[T, R](sources.asJava, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(t.asInstanceOf[Array[T]])
+    })
+  }
+
+  def combineLatestDelayError[T, R](sources: Iterable[ObservableSource[_ <: T]], bufferSize: Int)(combiner: Array[T] => R): Observable[R] = {
+    io.reactivex.Observable.combineLatestDelayError[T, R](sources.asJava, new io.reactivex.functions.Function[Array[Object], R] {
+      def apply(t: Array[Object]): R = combiner(t.asInstanceOf[Array[T]])
+    }, bufferSize)
+  }
+
+  def concat[T](sources: Iterable[_ <: ObservableSource[_ <: T]]): Observable[T] = {
+    io.reactivex.Observable.concat[T](sources.asJava)
+  }
+
+  def concat[T](sources: ObservableSource[_ <: ObservableSource[_ <: T]]): Observable[T] = {
+    io.reactivex.Observable.concat[T](sources)
+  }
+
+  def concat[T](sources: ObservableSource[_ <: ObservableSource[_ <: T]], prefetch: Int): Observable[T] = {
+    io.reactivex.Observable.concat[T](sources, prefetch)
+  }
+
+  def concat[T](source1: Observable[_ <: T], source2: Observable[_ <: T]): Observable[T] = {
     io.reactivex.Observable.concat(source1, source2)
   }
 
-  def concatArrayEager[T](sources: Observable[T]*): Observable[T] = {
-    io.reactivex.Observable.concatArrayEager(sources.map(_.asJava): _*)
+  def concat[T](source1: Observable[_ <: T],
+                source2: Observable[_ <: T],
+                source3: Observable[_ <: T]): Observable[T] = {
+    io.reactivex.Observable.concat(source1, source2, source3)
+  }
+
+  def concat[T](source1: Observable[_ <: T],
+                source2: Observable[_ <: T],
+                source3: Observable[_ <: T],
+                source4: Observable[_ <: T]): Observable[T] = {
+    io.reactivex.Observable.concat(source1, source2, source3, source4)
+  }
+
+  def concatArray[T](sources: ObservableSource[_ <: T]*): Observable[T] = {
+    io.reactivex.Observable.concatArray[T](sources: _*)
+  }
+
+  def concatArrayDelayError[T](sources: ObservableSource[_ <: T]*): Observable[T] = {
+    io.reactivex.Observable.concatArrayDelayError[T](sources: _*)
+  }
+
+  def concatArrayEager[T](sources: ObservableSource[_ <: T]*): Observable[T] = {
+    io.reactivex.Observable.concatArrayEager[T](sources: _*)
+  }
+
+  def concatArrayEager[T](maxConcurrency: Int, prefetch: Int, sources: ObservableSource[_ <: T]*): Observable[T] = {
+    io.reactivex.Observable.concatArrayEager[T](maxConcurrency, prefetch, sources: _*)
+  }
+
+  def concatDelayError[T](sources: Iterable[_ <: ObservableSource[_ <: T]]): Observable[T] = {
+    io.reactivex.Observable.concatDelayError[T](sources.asJava)
+  }
+
+  def concatDelayError[T](sources: ObservableSource[_ <: ObservableSource[_ <: T]]) = {
+    io.reactivex.Observable.concatDelayError[T](sources)
+  }
+
+  def concatDelayError[T](sources: ObservableSource[_ <: ObservableSource[_ <: T]], prefetch: Int, tillTheEnd: Boolean): Observable[T] = {
+    io.reactivex.Observable.concatDelayError[T](sources, prefetch, tillTheEnd)
   }
 
   def empty[T]: Observable[T] = {
