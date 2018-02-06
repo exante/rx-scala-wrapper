@@ -17,13 +17,13 @@ bintray {
         repo = "maven-oss"
         name = "rx-scala-wrapper"
         userOrg = "lambdas"
-        licenses = ["BSD"]
+        licenses = ["MIT"]
         vcsUrl = "https://github.com/exante/rx-scala-wrapper"
         version {
-            name = "NEXT-SNAPSHOT"
-            desc = "RX scala wrapper 0.1.5"
+            name = "0.1.6"
+            desc = "RX scala wrapper 0.1.6"
             released  = new Date()
-            vcsTag = "0.1.5"
+            vcsTag = "0.1.6"
         }
     }
 }
@@ -34,7 +34,7 @@ publishing {
             from components.java
             groupId "eu.exante"
             artifactId "rx-scala-wrapper"
-            version "0.1.5"
+            version "0.1.6"
         }
     }
 }
