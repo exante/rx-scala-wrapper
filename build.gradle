@@ -17,7 +17,7 @@ bintray {
         repo = "maven-oss"
         name = "rx-scala-wrapper"
         userOrg = "lambdas"
-        licenses = ["BSD"]
+        licenses = ["MIT"]
         vcsUrl = "https://github.com/exante/rx-scala-wrapper"
         version {
             name = "NEXT-SNAPSHOT"
