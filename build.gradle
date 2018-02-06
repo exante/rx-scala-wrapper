@@ -1,26 +1,40 @@
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
 apply plugin: "scala"
 apply plugin: "maven-publish"
-apply plugin: "maven-publish-auth"
 
 repositories {
     jcenter()
 }
 
+bintray {
+    user = "$bintrayUser"
+    key = "$bintrayApiKey"
+    publications = ["BintrayPublication"]
+    pkg {
+        repo = "maven-oss"
+        name = "rx-scala-wrapper"
+        userOrg = "lambdas"
+        licenses = ["BSD"]
+        vcsUrl = "https://github.com/exante/rx-scala-wrapper"
+        version {
+            name = "NEXT-SNAPSHOT"
+            desc = "RX scala wrapper NEXT-SNAPSHOT"
+            released  = new Date()
+            vcsTag = "NEXT-SNAPSHOT"
+        }
+    }
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
+        BintrayPublication(MavenPublication) {
+            from components.java
             groupId "eu.exante"
             artifactId "rx-scala-wrapper"
             version "NEXT-SNAPSHOT"
-
-            from components.java
-        }
-    }
-
-    repositories {
-        maven {
-            name "atp"
-            url "http://nexus.ghcg.com/repository/atp"
         }
     }
 }
@@ -30,14 +44,3 @@ dependencies {
     compile group: "io.reactivex.rxjava2", name: "rxjava",           version: "2.+"
     compile group: "org.reactivestreams",  name: "reactive-streams", version: "1.0.+"
 }
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1"
-    }
-}
-
