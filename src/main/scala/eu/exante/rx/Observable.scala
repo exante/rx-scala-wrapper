@@ -1,10 +1,14 @@
 package eu.exante.rx
 
+import java.util.concurrent.Callable
+
 import io.reactivex.disposables.Disposable
-import io.reactivex.{ObservableSource, ObservableTransformer, functions}
+import io.reactivex.functions.{Consumer, Function}
+import io.reactivex.{ObservableSource, ObservableTransformer, Scheduler}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.TimeUnit
+import scala.{Function => _}
 
 class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
 
@@ -40,6 +44,10 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.map[R](new io.reactivex.functions.Function[T, R] {
       def apply(t: T): R = f(t)
     })
+  }
+
+  def observeOn(scheduler: Scheduler): Observable[T] = {
+    u.observeOn(scheduler)
   }
 
   def scan[R](initialValue: R)(f: (R, T) => R): Observable[R] = {
@@ -312,5 +320,13 @@ object Observable {
 
   def never[T]: Observable[T] = {
     io.reactivex.Observable.never[T]()
+  }
+
+  def using[T, R](resourceFactory: => R, observableFactory: R => ObservableSource[T], disposeResource: R => Unit): Observable[T] = {
+    val r: Callable[R] = () => resourceFactory
+    val o: Function[R, ObservableSource[T]] = (t: R) => observableFactory(t)
+    val d: Consumer[R] = (t: R) => disposeResource(t)
+
+    io.reactivex.Observable.using(r, o, d)
   }
 }

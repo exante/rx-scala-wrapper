@@ -1,9 +1,10 @@
 apply plugin: "scala"
 apply plugin: "maven-publish"
+apply plugin: "com.fipsoft.maven-repo-settings"
 
 jar {
     baseName = "rx-scala-wrapper"
-    version = "NEXT-SNAPSHOT"
+    version = "0.1.3"
 }
 
 task sourceJar(type: Jar) {
@@ -19,18 +20,17 @@ publishing {
         maven(MavenPublication) {
             groupId "eu.exante"
             artifactId "rx-scala-wrapper"
-            version "0.1.0"
+            version "0.1.2"
 
             from components.java
         }
     }
 
     repositories {
-        maven {
-            url("http://nexus.ghcg.com/repository/thirdparty")
-            credentials {
-                username "$nexusUsername"
-                password "$nexusPassword"
+        mavenInternal {
+            repo {
+                id "thirdparty"
+                url "http://nexus.ghcg.com/repository/thirdparty"
             }
         }
     }
@@ -40,5 +40,17 @@ dependencies {
     compile group: "org.scala-lang",       name: "scala-library",    version: "2.12.4"
     compile group: "io.reactivex.rxjava2", name: "rxjava",           version: "2.+"
     compile group: "org.reactivestreams",  name: "reactive-streams", version: "1.0.+"
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "com.fipsoft.gradle:maven-repo-settings:0.3.0"
+    }
 }
 
