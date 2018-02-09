@@ -28,6 +28,10 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.distinctUntilChanged()
   }
 
+  def doOnError(onError: Throwable => Unit): Observable[T] = {
+    u.doOnError(t => onError(t))
+  }
+
   def filter(f: T => Boolean): Observable[T] = {
     u.filter(new io.reactivex.functions.Predicate[T] {
       def test(t: T): Boolean = f(t)

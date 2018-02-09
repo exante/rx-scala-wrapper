@@ -32,8 +32,8 @@ bintray {
         vcsUrl = "https://github.com/exante/rx-scala-wrapper"
         githubRepo = "exante/rx-scala-wrapper"
         version {
-            name = "0.1.8"
-            vcsTag = "0.1.8"
+            name = "0.1.9"
+            vcsTag = "0.1.9"
         }
     }
 }
@@ -46,7 +46,7 @@ publishing {
             artifact javadocJar
             groupId "eu.exante"
             artifactId "rx-scala-wrapper"
-            version "0.1.8"
+            version "0.1.9"
         }
     }
 }
