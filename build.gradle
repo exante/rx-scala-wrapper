@@ -5,6 +5,16 @@ plugins {
 apply plugin: "scala"
 apply plugin: "maven-publish"
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 repositories {
     jcenter()
 }
@@ -16,14 +26,13 @@ bintray {
     pkg {
         repo = "maven-oss"
         name = "rx-scala-wrapper"
+        desc = "Straightforward rxjava wrapper for scala"
         userOrg = "lambdas"
         licenses = ["MIT"]
         vcsUrl = "https://github.com/exante/rx-scala-wrapper"
+        githubRepo = "exante/rx-scala-wrapper"
         version {
             name = "NEXT-SNAPSHOT"
-            desc = "RX scala wrapper NEXT-SNAPSHOT"
-            released  = new Date()
-            vcsTag = "NEXT-SNAPSHOT"
         }
     }
 }
@@ -32,6 +41,8 @@ publishing {
     publications {
         BintrayPublication(MavenPublication) {
             from components.java
+            artifact sourcesJar
+            artifact javadocJar
             groupId "eu.exante"
             artifactId "rx-scala-wrapper"
             version "NEXT-SNAPSHOT"
