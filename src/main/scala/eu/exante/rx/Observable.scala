@@ -68,6 +68,10 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.subscribe { p => f(p) }
   }
 
+  def subscribe(onSuccess: T => Unit, onError: Throwable => Unit): Disposable = {
+    u.subscribe(p => onSuccess(p), t => onError(t))
+  }
+
   def switchMap[R](f: T => Observable[R]): Observable[R] = {
     u.switchMap[R](new io.reactivex.functions.Function[T, io.reactivex.Observable[R]] {
       def apply(t: T): io.reactivex.Observable[R] = f(t)
@@ -316,6 +320,10 @@ object Observable {
   def interval(initial: Long, period: Long, unit: TimeUnit): Observable[Long] = {
     io.reactivex.Observable.interval(initial, period, unit).asScala
       .map[Long] { x => x }
+  }
+
+  def intervalRange(start: Long, count: Long, initialDelay: Long, period: Long, unit: TimeUnit ): Observable[Long] = {
+    io.reactivex.Observable.intervalRange(start, count, initialDelay, period, unit).map[Long] { x => x }
   }
 
   def merge[T](source1: Observable[T], source2: Observable[T]): Observable[T] = {

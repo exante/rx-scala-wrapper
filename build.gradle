@@ -6,12 +6,12 @@ apply plugin: "scala"
 apply plugin: "maven-publish"
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    classifier = "sources"
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    classifier = "javadoc"
     from javadoc.destinationDir
 }
 
@@ -20,8 +20,8 @@ repositories {
 }
 
 bintray {
-    user = "$bintrayUser"
-    key = "$bintrayApiKey"
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
     publications = ["BintrayPublication"]
     pkg {
         repo = "maven-oss"
