@@ -4,6 +4,7 @@ import java.util.concurrent.Callable
 
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.{Consumer, Function}
+import io.reactivex.observables.GroupedObservable
 import io.reactivex.{ObservableSource, ObservableTransformer, Scheduler}
 
 import scala.collection.JavaConverters._
@@ -42,6 +43,36 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.flatMap[R](new io.reactivex.functions.Function[T, ObservableSource[R]] {
       def apply(t: T): ObservableSource[R] = f(t)
     })
+  }
+
+  def groupBy[K](keySelector: T => K): Observable[GroupedObservable[K, T]] = {
+    u.groupBy[K](new io.reactivex.functions.Function[T, K] {
+      override def apply(t: T): K = keySelector(t)
+    })
+  }
+
+  def groupBy[K](keySelector: T => K, delayError: Boolean): Observable[GroupedObservable[K, T]] = {
+    u.groupBy[K](new io.reactivex.functions.Function[T, K] {
+      override def apply(t: T): K = keySelector(t)
+    }, delayError)
+  }
+
+  def groupBy[K, V](keySelector: T => K, valueSelector: T => V): Observable[GroupedObservable[K, V]] = {
+    val kS: io.reactivex.functions.Function[T, K] = (t: T) => keySelector(t)
+    val vS: io.reactivex.functions.Function[T, V] = (t: T) => valueSelector(t)
+    u.groupBy[K, V](kS, vS)
+  }
+
+  def groupBy[K, V](keySelector: T => K, valueSelector: T => V, delayError: Boolean): Observable[GroupedObservable[K, V]] = {
+    val kS: io.reactivex.functions.Function[T, K] = (t: T) => keySelector(t)
+    val vS: io.reactivex.functions.Function[T, V] = (t: T) => valueSelector(t)
+    u.groupBy[K, V](kS, vS, delayError)
+  }
+
+  def groupBy[K, V](keySelector: T => K, valueSelector: T => V, delayError: Boolean, bufferSize: Int): Observable[GroupedObservable[K, V]] = {
+    val kS: io.reactivex.functions.Function[T, K] = (t: T) => keySelector(t)
+    val vS: io.reactivex.functions.Function[T, V] = (t: T) => valueSelector(t)
+    u.groupBy[K, V](kS, vS, delayError, bufferSize)
   }
 
   def map[R](f: T => R): Observable[R] = {
@@ -322,7 +353,7 @@ object Observable {
       .map[Long] { x => x }
   }
 
-  def intervalRange(start: Long, count: Long, initialDelay: Long, period: Long, unit: TimeUnit ): Observable[Long] = {
+  def intervalRange(start: Long, count: Long, initialDelay: Long, period: Long, unit: TimeUnit): Observable[Long] = {
     io.reactivex.Observable.intervalRange(start, count, initialDelay, period, unit).map[Long] { x => x }
   }
 
