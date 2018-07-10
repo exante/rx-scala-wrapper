@@ -7,6 +7,17 @@ group = "eu.exante"
 
 version = project.properties["release.version"]
 
+def releaseTag = System.getenv("TRAVIS_TAG")
+if (releaseTag != null && !releaseTag.isEmpty()) {
+    if (releaseTag.startsWith("v")) {
+        releaseTag = releaseTag.substring(1)
+    }
+    version = releaseTag
+    project.properties.put("release.version", releaseTag)
+
+    println("Releasing with version " + version)
+}
+
 apply plugin: "scala"
 apply plugin: "maven-publish"
 
@@ -42,18 +53,18 @@ repositories {
 //    }
 //}
 
-//publishing {
-//    publications {
-//        BintrayPublication(MavenPublication) {
-//            from components.java
-//            artifact sourcesJar
-//            artifact javadocJar
-//            groupId "eu.exante"
-//            artifactId "rx-scala-wrapper"
-//            version "NEXT-SNAPSHOT"
-//        }
-//    }
-//}
+publishing {
+    publications {
+        BintrayPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId "eu.exante"
+            artifactId "rx-scala-wrapper"
+            version version
+        }
+    }
+}
 
 dependencies {
     compile group: "org.scala-lang",       name: "scala-library",    version: "2.12.5"
@@ -68,17 +79,6 @@ if (!System.getenv("TRAVIS_PULL_REQUEST").equals("false")) {
     releaseMode = "branch"
 } else if (System.getenv("TRAVIS_PULL_REQUEST").equals("false") && !System.getenv("TRAVIS_TAG").equals("")) {
     releaseMode = "full"
-}
-
-def releaseTag = System.getenv("TRAVIS_TAG")
-if (releaseTag != null && !releaseTag.isEmpty()) {
-    if (releaseTag.startsWith("v")) {
-        releaseTag = releaseTag.substring(1)
-    }
-    version = releaseTag
-    project.properties.put("release.version", releaseTag)
-
-    println("Releasing with version " + version)
 }
 
 if (!"releaseMode".equals("")) {
@@ -118,6 +118,7 @@ if (!"releaseMode".equals("")) {
             key = bintrayKey
             configurations = ["archives"]
             publish = true
+            publications = ['BintrayPublication']
             pkg {
                 repo = "maven-oss"
                 name = "rx-scala-wrapper"
