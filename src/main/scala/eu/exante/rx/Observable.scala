@@ -372,4 +372,14 @@ object Observable {
 
     io.reactivex.Observable.using(r, o, d)
   }
+
+  /** Repeat the specified `Observable` sources in cycle. */
+  def cycle[T](source: => Observable[T]): Observable[T] = {
+    io.reactivex.Observable.concat(new java.lang.Iterable[io.reactivex.Observable[T]] {
+      def iterator: java.util.Iterator[io.reactivex.Observable[T]] = new java.util.Iterator[io.reactivex.Observable[T]] {
+        def hasNext = true
+        def next(): io.reactivex.Observable[T] = source.u
+      }
+    })
+  }
 }
