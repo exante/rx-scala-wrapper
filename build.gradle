@@ -100,6 +100,7 @@ if (!"releaseMode".equals("")) {
                 }
 
                 defaults {
+                    publications ('BintrayPublication')
                     publishConfigs("archives")
                 }
             }
