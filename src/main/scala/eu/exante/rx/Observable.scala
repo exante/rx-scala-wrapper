@@ -21,6 +21,16 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     this
   }
 
+  /* We don`t use s.c.i.List because j.u.List is interface, really implementation is unknown.
+   * jlist.asScala return JListWrapper
+   */
+  def buffer[TOpening, TClosing](openingIndicator: ObservableSource[TOpening], closingIndicator: TOpening => ObservableSource[TClosing]): Observable[Seq[T]] = {
+    val rxClosingIndicator: io.reactivex.functions.Function[TOpening, ObservableSource[TClosing]] = closingIndicator(_)
+    u.buffer(openingIndicator, rxClosingIndicator)
+      .asScala
+      .map(_.asScala)
+  }
+
   def compose[R](composer: ObservableTransformer[T, R]): Observable[R] = {
     u.compose[R](composer)
   }
@@ -85,6 +95,11 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.observeOn(scheduler)
   }
 
+  def publish[R](selector: Observable[T] => ObservableSource[R]): Observable[R] = {
+    val rxSelector: io.reactivex.functions.Function[io.reactivex.Observable[T], ObservableSource[R]] = selector(_)
+    u.publish(rxSelector)
+  }
+
   def scan[R](initialValue: R)(f: (R, T) => R): Observable[R] = {
     u.scan[R](initialValue, new io.reactivex.functions.BiFunction[R, T, R] {
       def apply(t1: R, t2: T): R = f(t1, t2)
@@ -124,6 +139,13 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     val u1 = u.takeUntil(throttling)
     val u2 = u.skipUntil(throttling)
     u1 mergeWith u2.throttleFirst(delay, unit)
+  }
+
+  def window[U, V](openingIndicator: ObservableSource[U], closingIndicator: U => ObservableSource[V]): Observable[Observable[T]] = {
+    val rxClosingIndicator: io.reactivex.functions.Function[U, ObservableSource[V]] = closingIndicator(_)
+    u.window(openingIndicator, rxClosingIndicator)
+      .asScala
+      .map(_.asScala)
   }
 
   def withLatestFrom[U, R](other: Observable[U])(f: (T, U) => R): Observable[R] = {
@@ -344,6 +366,10 @@ object Observable {
 
   def fromArray[T](items: T*): Observable[T] = {
     io.reactivex.Observable.fromArray(items: _*)
+  }
+
+  def fromIterable[T](items: Iterable[T]): Observable[T] = {
+    io.reactivex.Observable.fromIterable(items.asJava)
   }
 
   def just[T](item1: T): Observable[T] = {
