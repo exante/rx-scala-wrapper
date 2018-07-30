@@ -1,5 +1,21 @@
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
+    id "com.jfrog.bintray" version "1.8.3"
+    id "com.jfrog.artifactory" version "4.7.5"
+}
+
+group = "eu.exante"
+
+version = project.properties["release.version"]
+
+def releaseTag = System.getenv("TRAVIS_TAG")
+if (releaseTag != null && !releaseTag.isEmpty()) {
+    if (releaseTag.startsWith("v")) {
+        releaseTag = releaseTag.substring(1)
+    }
+    version = releaseTag
+    project.properties.put("release.version", releaseTag)
+
+    println("Releasing with version " + version)
 }
 
 apply plugin: "scala"
@@ -19,24 +35,23 @@ repositories {
     jcenter()
 }
 
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    publications = ["BintrayPublication"]
-    pkg {
-        repo = "maven-oss"
-        name = "rx-scala-wrapper"
-        desc = "Straightforward rxjava wrapper for scala"
-        userOrg = "lambdas"
-        licenses = ["MIT"]
-        vcsUrl = "https://github.com/exante/rx-scala-wrapper"
-        githubRepo = "exante/rx-scala-wrapper"
-        version {
-            name = "0.1.10"
-            vcsTag = "0.1.10"
-        }
-    }
-}
+//bintray {
+//    user = System.getenv('BINTRAY_USER')
+//    key = System.getenv('BINTRAY_KEY')
+//    publications = ["BintrayPublication"]
+//    pkg {
+//        repo = "maven-oss"
+//        name = "rx-scala-wrapper"
+//        desc = "Straightforward rxjava wrapper for scala"
+//        userOrg = "lambdas"
+//        licenses = ["MIT"]
+//        vcsUrl = "https://github.com/exante/rx-scala-wrapper"
+//        githubRepo = "exante/rx-scala-wrapper"
+//        version {
+//            name = "NEXT-SNAPSHOT"
+//        }
+//    }
+//}
 
 publishing {
     publications {
@@ -46,7 +61,7 @@ publishing {
             artifact javadocJar
             groupId "eu.exante"
             artifactId "rx-scala-wrapper"
-            version "0.1.10"
+            version version
         }
     }
 }
@@ -55,4 +70,71 @@ dependencies {
     compile group: "org.scala-lang",       name: "scala-library",    version: "2.12.5"
     compile group: "io.reactivex.rxjava2", name: "rxjava",           version: "2.+"
     compile group: "org.reactivestreams",  name: "reactive-streams", version: "1.0.+"
+}
+
+def releaseMode = ""
+if (!System.getenv("TRAVIS_PULL_REQUEST").equals("false")) {
+    releaseMode = "pr"
+} else if (System.getenv("TRAVIS_PULL_REQUEST").equals("false") && System.getenv("TRAVIS_TAG").equals("")) {
+    releaseMode = "branch"
+} else if (System.getenv("TRAVIS_PULL_REQUEST").equals("false") && !System.getenv("TRAVIS_TAG").equals("")) {
+    releaseMode = "full"
+}
+
+if (!"releaseMode".equals("")) {
+    def bintrayUser = System.getenv('BINTRAY_USER')
+    def bintrayKey  = System.getenv('BINTRAY_KEY')
+
+    if ("branch".equals(releaseMode)) {
+
+        println("ReleaseMode: " + releaseMode)
+        artifactory {
+            contextUrl = "https://oss.jfrog.org"
+
+            publish {
+                repository {
+                    repoKey = "oss-snapshot-local"
+
+                    username = bintrayUser
+                    password = bintrayKey
+                }
+
+                defaults {
+                    publications ('BintrayPublication')
+                    publishConfigs("archives")
+                }
+            }
+        }
+
+        build.finalizedBy(artifactoryPublish)
+    }
+
+    if ("full".equals(releaseMode)) {
+        def rver = version
+
+        println("ReleaseMode: " + releaseMode + " version " + rver)
+
+        bintray {
+            user = bintrayUser
+            key = bintrayKey
+            configurations = ["archives"]
+            publish = true
+            publications = ['BintrayPublication']
+            pkg {
+                repo = "maven-oss"
+                name = "rx-scala-wrapper"
+                desc = "Straightforward rxjava wrapper for scala"
+                userOrg = "exante"
+                labels = ["rxjava", "reactivex", "scala"]
+                licenses = ["MIT"]
+                vcsUrl = "https://github.com/exante/rx-scala-wrapper"
+                githubRepo = "exante/rx-scala-wrapper"
+                version {
+                    name = rver
+                }
+            }
+        }
+
+        build.finalizedBy(bintrayUpload)
+    }
 }
