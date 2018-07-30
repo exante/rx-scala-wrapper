@@ -100,7 +100,9 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
   }
 
   def subscribe(onSuccess: T => Unit, onError: Throwable => Unit): Disposable = {
-    u.subscribe(p => onSuccess(p), t => onError(t))
+    val rxOnSuccess: io.reactivex.functions.Consumer[T] = onSuccess(_)
+    val rxOnError: io.reactivex.functions.Consumer[Throwable] = onError(_)
+    u.subscribe(rxOnSuccess, rxOnError)
   }
 
   def switchMap[R](f: T => Observable[R]): Observable[R] = {
