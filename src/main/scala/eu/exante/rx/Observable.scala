@@ -2,6 +2,7 @@ package eu.exante.rx
 
 import java.util.concurrent.Callable
 
+import eu.exante.rx.Utils._
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.{Consumer, Function}
 import io.reactivex.observables.GroupedObservable
@@ -172,31 +173,31 @@ object Observable {
 
   def combineLatest[T: ClassTag, R](bufferSize: Int, sources: ObservableSource[_ <: T]*)(combiner: Array[T] => R): Observable[R] = {
     io.reactivex.Observable.combineLatest[T, R](new io.reactivex.functions.Function[Array[Object], R] {
-      def apply(t: Array[Object]): R = combiner(t.map(_.asInstanceOf[T]))
+      def apply(t: Array[Object]): R = combiner(t.castTo[T])
     }, bufferSize, sources: _*)
   }
 
   def combineLatest[T: ClassTag, R](sources: Iterable[_ <: ObservableSource[_ <: T]])(combiner: Array[T] => R): Observable[R] = {
     io.reactivex.Observable.combineLatest[T, R](sources.asJava, new io.reactivex.functions.Function[Array[Object], R] {
-      def apply(t: Array[Object]): R = combiner(t.map(_.asInstanceOf[T]))
+      def apply(t: Array[Object]): R = combiner(t.castTo[T])
     })
   }
 
   def combineLatest[T: ClassTag, R](sources: Iterable[_ <: ObservableSource[_ <: T]], bufferSize: Int)(combiner: Array[T] => R): Observable[R] = {
     io.reactivex.Observable.combineLatest[T, R](sources.asJava, new io.reactivex.functions.Function[Array[Object], R] {
-      def apply(t: Array[Object]): R = combiner(t.map(_.asInstanceOf[T]))
+      def apply(t: Array[Object]): R = combiner(t.castTo[T])
     }, bufferSize)
   }
 
   def combineLatest[T: ClassTag, R](sources: Array[ObservableSource[_ <: T]])(combiner: Array[T] => R): Observable[R] = {
     io.reactivex.Observable.combineLatest[T, R](sources, new io.reactivex.functions.Function[Array[Object], R] {
-      def apply(t: Array[Object]): R = combiner(t.map(_.asInstanceOf[T]))
+      def apply(t: Array[Object]): R = combiner(t.castTo[T])
     })
   }
 
   def combineLatest[T: ClassTag, R](sources: Array[ObservableSource[_ <: T]], bufferSize: Int)(combiner: Array[T] => R): Observable[R] = {
     io.reactivex.Observable.combineLatest[T, R](sources, new io.reactivex.functions.Function[Array[Object], R] {
-      def apply(t: Array[Object]): R = combiner(t.map(_.asInstanceOf[T]))
+      def apply(t: Array[Object]): R = combiner(t.castTo[T])
     }, bufferSize)
   }
 
