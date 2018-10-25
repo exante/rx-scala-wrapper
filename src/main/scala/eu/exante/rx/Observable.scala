@@ -37,12 +37,28 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.compose[R](composer)
   }
 
+  def delay(delay: Long, timeUnit: TimeUnit): Observable[T] = {
+    u.delay(delay, timeUnit)
+  }
+
+  def delaySubscription(delay: Long, timeUnit: TimeUnit): Observable[T] = {
+    u.delaySubscription(delay, timeUnit)
+  }
+
   def distinctUntilChanged: Observable[T] = {
     u.distinctUntilChanged()
   }
 
   def doOnError(onError: Throwable => Unit): Observable[T] = {
     u.doOnError(t => onError(t))
+  }
+
+  def doOnNext(onNext: T => Unit): Observable[T] = {
+    u.doOnNext(t => onNext(t))
+  }
+
+  def doOnComplete(onComplete: => Unit): Observable[T] = {
+    u.doOnComplete(() => onComplete)
   }
 
   def filter(f: T => Boolean): Observable[T] = {
@@ -97,6 +113,12 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.observeOn(scheduler)
   }
 
+  def onErrorResumeNext(f: Throwable => Observable[T]): Observable[T] = {
+    u.onErrorResumeNext(new Function[Throwable, ObservableSource[T]] {
+      override def apply(t: Throwable): ObservableSource[T] = f(t)
+    })
+  }
+
   def publish[R](selector: Observable[T] => ObservableSource[R]): Observable[R] = {
     val rxSelector: io.reactivex.functions.Function[io.reactivex.Observable[T], ObservableSource[R]] = selector(_)
     u.publish(rxSelector)
@@ -128,6 +150,10 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     })
   }
 
+  def takeLast(count: Int): Observable[T] = {
+    u.takeLast(count)
+  }
+
   def takeUntil(other: Observable[_]): Observable[T] = {
     u.takeUntil(other)
   }
@@ -154,6 +180,14 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
     u.withLatestFrom[U, R](other, new io.reactivex.functions.BiFunction[T, U, R] {
       def apply(t1: T, t2: U): R = f(t1, t2)
     })
+  }
+
+  /** Note: This is Exante extension method, there is no such method in rxJava.
+    *
+    * Takes elements until other observable is completed.
+    */
+  def takeUntilCompleted(other: Observable[_]): Observable[T] = {
+    u.takeUntil(other.takeLast(1).map(_ => ()).defaultIfEmpty(()))
   }
 }
 
