@@ -9,7 +9,7 @@ Grab it from jcenter.
 <dependency>
   <groupId>eu.exante</groupId>
   <artifactId>rx-scala-wrapper</artifactId>
-  <version>0.1.10</version>
+  <version>0.1.21</version>
   <type>pom</type>
 </dependency>
 ```

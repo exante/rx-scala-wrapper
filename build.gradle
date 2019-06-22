@@ -1,6 +1,9 @@
 plugins {
-    id "com.jfrog.bintray" version "1.8.3"
-    id "com.jfrog.artifactory" version "4.7.5"
+    id 'java'
+    id 'scala'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.8.4"
+    id "com.jfrog.artifactory" version "4.9.7"
 }
 
 group = "eu.exante"
@@ -17,9 +20,6 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
 
     println("Releasing with version " + version)
 }
-
-apply plugin: "scala"
-apply plugin: "maven-publish"
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources"
@@ -67,8 +67,8 @@ publishing {
 }
 
 dependencies {
-    compile group: "org.scala-lang",       name: "scala-library",    version: "2.12.5"
-    compile group: "io.reactivex.rxjava2", name: "rxjava",           version: "2.2.1"
+    implementation 'org.scala-lang:scala-library:2.12.8'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
 }
 
 def releaseMode = ""
