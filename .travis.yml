@@ -9,4 +9,4 @@ cache:
   - $HOME/.gradle
 
 script:
-- gradle build
+- ./gradlew build
