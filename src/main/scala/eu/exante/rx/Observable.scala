@@ -135,7 +135,8 @@ class Observable[T](private val u: io.reactivex.Observable[T]) extends AnyVal {
   }
 
   def subscribe(f: T => Unit): Disposable = {
-    u.subscribe { p => f(p) }
+    val consumer: Consumer[T] = (t: T) => f(t)
+    u.subscribe(consumer)
   }
 
   def subscribe(onSuccess: T => Unit, onError: Throwable => Unit): Disposable = {
