@@ -236,22 +236,23 @@ object Observable {
   }
 
   def combineLatest[T1, T2](source1: Observable[T1], source2: Observable[T2]): Observable[(T1, T2)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, (T1, T2)](source1, source2, (_, _))
+    val combiner: io.reactivex.functions.BiFunction[T1, T2, (T1, T2)] = Tuple2.apply
+    io.reactivex.Observable.combineLatest[T1, T2, (T1, T2)](source1, source2, combiner)
   }
 
   def combineLatest[T1, T2, T3, R](source1: Observable[T1],
                                    source2: Observable[T2],
                                    source3: Observable[T3]): Observable[(T1, T2, T3)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, T3, (T1, T2, T3)](
-      source1, source2, source3, (_, _, _))
+    val combiner: io.reactivex.functions.Function3[T1, T2, T3, (T1, T2, T3)] = Tuple3.apply
+    io.reactivex.Observable.combineLatest[T1, T2, T3, (T1, T2, T3)](source1, source2, source3, combiner)
   }
 
   def combineLatest[T1, T2, T3, T4](source1: Observable[T1],
                                     source2: Observable[T2],
                                     source3: Observable[T3],
                                     source4: Observable[T4]): Observable[(T1, T2, T3, T4)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, (T1, T2, T3, T4)](
-      source1, source2, source3, source4, (_, _, _, _))
+    val combiner: io.reactivex.functions.Function4[T1, T2, T3, T4, (T1, T2, T3, T4)] = Tuple4.apply
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, (T1, T2, T3, T4)](source1, source2, source3, source4, combiner)
   }
 
   def combineLatest[T1, T2, T3, T4, T5](source1: Observable[T1],
@@ -259,8 +260,8 @@ object Observable {
                                         source3: Observable[T3],
                                         source4: Observable[T4],
                                         source5: Observable[T5]): Observable[(T1, T2, T3, T4, T5)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, (T1, T2, T3, T4, T5)](
-      source1, source2, source3, source4, source5, (_, _, _, _, _))
+    val combiner: io.reactivex.functions.Function5[T1, T2, T3, T4, T5, (T1, T2, T3, T4, T5)] = Tuple5.apply
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, (T1, T2, T3, T4, T5)](source1, source2, source3, source4, source5, combiner)
   }
 
   def combineLatest[T1, T2, T3, T4, T5, T6](source1: Observable[T1],
@@ -269,8 +270,8 @@ object Observable {
                                             source4: Observable[T4],
                                             source5: Observable[T5],
                                             source6: Observable[T6]): Observable[(T1, T2, T3, T4, T5, T6)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, (T1, T2, T3, T4, T5, T6)](
-      source1, source2, source3, source4, source5, source6, (_, _, _, _, _, _))
+    val combiner: io.reactivex.functions.Function6[T1, T2, T3, T4, T5, T6, (T1, T2, T3, T4, T5, T6)] = Tuple6.apply
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, (T1, T2, T3, T4, T5, T6)](source1, source2, source3, source4, source5, source6, combiner)
   }
 
   def combineLatest[T1, T2, T3, T4, T5, T6, T7](source1: Observable[T1],
@@ -280,8 +281,8 @@ object Observable {
                                                 source5: Observable[T5],
                                                 source6: Observable[T6],
                                                 source7: Observable[T7]): Observable[(T1, T2, T3, T4, T5, T6, T7)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, (T1, T2, T3, T4, T5, T6, T7)](
-      source1, source2, source3, source4, source5, source6, source7, (_, _, _, _, _, _, _))
+    val combiner: io.reactivex.functions.Function7[T1, T2, T3, T4, T5, T6, T7, (T1, T2, T3, T4, T5, T6, T7)] = Tuple7.apply
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, (T1, T2, T3, T4, T5, T6, T7)](source1, source2, source3, source4, source5, source6, source7, combiner)
   }
 
   def combineLatest[T1, T2, T3, T4, T5, T6, T7, T8](source1: Observable[T1],
@@ -292,8 +293,8 @@ object Observable {
                                                     source6: Observable[T6],
                                                     source7: Observable[T7],
                                                     source8: Observable[T8]): Observable[(T1, T2, T3, T4, T5, T6, T7, T8)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, (T1, T2, T3, T4, T5, T6, T7, T8)](
-      source1, source2, source3, source4, source5, source6, source7, source8, (_, _, _, _, _, _, _, _))
+    val combiner: io.reactivex.functions.Function8[T1, T2, T3, T4, T5, T6, T7, T8, (T1, T2, T3, T4, T5, T6, T7, T8)] = Tuple8.apply
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, (T1, T2, T3, T4, T5, T6, T7, T8)](source1, source2, source3, source4, source5, source6, source7, source8, combiner)
   }
 
   def combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, T9](source1: Observable[T1],
@@ -305,8 +306,8 @@ object Observable {
                                                         source7: Observable[T7],
                                                         source8: Observable[T8],
                                                         source9: Observable[T9]): Observable[(T1, T2, T3, T4, T5, T6, T7, T8, T9)] = {
-    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, T9, (T1, T2, T3, T4, T5, T6, T7, T8, T9)](
-      source1, source2, source3, source4, source5, source6, source7, source8, source9, (_, _, _, _, _, _, _, _, _))
+    val combiner: io.reactivex.functions.Function9[T1, T2, T3, T4, T5, T6, T7, T8, T9, (T1, T2, T3, T4, T5, T6, T7, T8, T9)] = Tuple9.apply
+    io.reactivex.Observable.combineLatest[T1, T2, T3, T4, T5, T6, T7, T8, T9, (T1, T2, T3, T4, T5, T6, T7, T8, T9)](source1, source2, source3, source4, source5, source6, source7, source8, source9, combiner)
   }
 
   def combineLatestDelayError[T, R](sources: Array[ObservableSource[_ <: T]])(combiner: Array[T] => R): Observable[R] = {
