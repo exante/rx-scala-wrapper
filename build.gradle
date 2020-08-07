@@ -2,8 +2,8 @@ plugins {
     id 'java'
     id 'scala'
     id 'maven-publish'
-    id "com.jfrog.bintray" version "1.8.4"
-    id "com.jfrog.artifactory" version "4.9.7"
+    id "com.jfrog.bintray" version "1.8.5"
+    id "com.jfrog.artifactory" version "4.16.1"
 }
 
 group = "eu.exante"
@@ -67,8 +67,8 @@ publishing {
 }
 
 dependencies {
-    implementation 'org.scala-lang:scala-library:2.12.8'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
+    implementation 'org.scala-lang:scala-library:[2.13,2.14)'
+    implementation 'io.reactivex.rxjava2:rxjava:[2.2,2.3)'
 }
 
 def releaseMode = ""
